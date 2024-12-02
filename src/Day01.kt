@@ -1,10 +1,10 @@
 import kotlin.math.abs
 
 fun main() {
-    fun List<String>.parteInput() = fold(emptyList<Int>() to emptyList<Int>()) { acc, line ->
+    fun List<String>.parteInput() = map { line ->
         val (f, s) = line.split("   ")
-        acc.first + f.toInt() to acc.second + s.toInt()
-    }
+        f.toInt() to s.toInt()
+    }.unzip()
 
     fun part1(input: Pair<List<Int>, List<Int>>): Int {
         return input.first.sorted().zip(input.second.sorted())
@@ -13,7 +13,7 @@ fun main() {
 
     fun part2(input: Pair<List<Int>, List<Int>>): Int {
         val secondEachCount = input.second.groupingBy { it }.eachCount()
-        return input.first.sumOf { it * secondEachCount.getOrElse(it) { 0 } }
+        return input.first.sumOf { it * (secondEachCount[it] ?: 0) }
     }
 
     // Test if implementation meets criteria from the description, like:
