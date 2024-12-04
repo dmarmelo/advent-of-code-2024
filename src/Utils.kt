@@ -6,7 +6,7 @@ import kotlin.io.path.readText
 /**
  * Reads all text from the given input txt file.
  */
-fun readInputRaw(name: String) = Path("src/$name.txt").readText()
+fun readInputRaw(name: String) = Path("src/$name.txt").readText().trim()
 
 /**
  * Reads lines from the given input txt file.
