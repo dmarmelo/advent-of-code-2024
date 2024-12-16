@@ -1,5 +1,3 @@
-import kotlin.collections.indices
-
 fun main() {
 
     data class Point2D(val row: Int, val column: Int)
@@ -40,11 +38,11 @@ fun main() {
         val map = input.map { line -> line.map { it } }
             .flatten()
             .mapIndexed { index, c ->
-                Point2D(row = index / input.size, column = index % input.first().length) to c
+                Point2D(row = index / input.first().length, column = index % input.first().length) to c
             }.toMap()
 
         var notVisited = map.keys.toMutableSet()
-        val groups = mutableListOf<Pair<Char,List<Point2D>>>()
+        val groups = mutableListOf<Pair<Char, List<Point2D>>>()
         while (notVisited.isNotEmpty()) {
             val first = notVisited.first()
             val group = search(
@@ -80,7 +78,7 @@ fun main() {
             }.toMap()
 
         var notVisited = map.keys.toMutableSet()
-        val groups = mutableListOf<Pair<Char,List<Point2D>>>()
+        val groups = mutableListOf<Pair<Char, List<Point2D>>>()
         while (notVisited.isNotEmpty()) {
             val first = notVisited.first()
             val group = search(
@@ -101,17 +99,21 @@ fun main() {
         return groups.sumOf { (id, group) ->
             val area = group.size
 
-            val perimeter = group.map { point ->
-                val neighbors = Direction.entries.map { dir -> point + dir }
-
-                val outside = neighbors.filter { !map.containsKey(it) || map.getValue(it) != id }.size
-                //val inside = neighbors.filter { map.containsKey(it) && map.getValue(it) == id }.size
-
-                // TODO check diagonals
-                if (outside == 3 || outside == 1) 1
-                else if (outside == 0) 4
-                else 0
-            }.sum()
+            val perimeter = group.sumOf { point ->
+                listOf(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP)
+                    .zipWithNext()
+                    .map { (first, second) ->
+                        listOf(
+                            map[point],
+                            map[point + first],
+                            map[point + second],
+                            map[point + first + second]
+                        )
+                    }.count { (target, side1, side2, corner) ->
+                        (target != side1 && target != side2) ||
+                                (side1 == target && side2 == target && corner != target)
+                    }
+            }
 
             area * perimeter
         }
